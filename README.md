@@ -35,9 +35,6 @@ Aplicativo mobile para atendimento de pizzaria (garçom/atendente).
 4. Enviado para cozinha
 5. Finaliza pedido
 
-
-```
-
 ## Estrutura
 
 ```
