@@ -6,35 +6,49 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { StackParamsList } from "../../routes/app.routes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { api } from "../../services/api";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function Dashboard() {
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamsList>>();
   const [number, setNumber] = useState("");
+  const { signOut } = useContext(AuthContext);
 
   async function openOrder() {
     if (number === "") {
       return;
     }
 
-    const response = await api.post(`/order`, {
-      table: Number(number),
-    });
+    try {
+      const response = await api.post(`/order`, {
+        table: Number(number),
+      });
 
-  
-    navigation.navigate("Order", {
-      number: number,
-      order_id: response.data.id,
-    });
-    setNumber("");
+      navigation.navigate("Order", {
+        number: number,
+        order_id: response.data.id,
+      });
+      setNumber("");
+    } catch (err) {
+      Alert.alert("Erro", "Não foi possível abrir a mesa");
+    }
+  }
+
+  function handleLogout() {
+    signOut();
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Sair</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Novo Pedido</Text>
 
       <TextInput
@@ -60,6 +74,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     backgroundColor: "#1d1d2e",
+  },
+  logoutButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    backgroundColor: "#ff5f5f",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 4,
+  },
+  logoutText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   title: {
     fontSize: 30,
